@@ -22,7 +22,6 @@ global using Windows.UI.Xaml.Hosting;
 global using Platform = Windows;
 using System.Runtime.InteropServices;
 using Windows.UI.Core;
-using Microsoft.Win32;
 
 struct Nothing { }
 namespace System.Threading.Tasks
