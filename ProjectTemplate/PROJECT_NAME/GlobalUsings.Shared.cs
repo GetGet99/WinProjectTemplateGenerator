@@ -9,7 +9,7 @@ global using System.Collections.Specialized;
 global using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace PROJECT_NAME;
+namespace PROJNAMESPACE_NAME;
 internal static class SelfNote
 {
     [DoesNotReturn]

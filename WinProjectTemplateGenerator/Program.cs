@@ -22,8 +22,9 @@ templatePath = Path.Combine(
     templatePath[..templatePath.LastIndexOf("WinProjectTemplateGenerator")],
     "ProjectTemplate"
 );
-var oldName = "PROJECT_NAME";
 var newName = Input("New Project Name");
+var newNamespace = Input("New Project Namespace (Empty for same)");
+if (string.IsNullOrWhiteSpace(newNamespace)) newNamespace = newName;
 var dest = Input("New Project Location");
 
 
@@ -37,6 +38,7 @@ void Warn(string warning)
 {
     Console.WriteLine(new WarningException(warning).ToString());
 }
+const string PROJECT_NAME = "PROJECT_NAME";
 void RenamePath(string path)
 {
     foreach (var fn in Directory.EnumerateFiles(path))
@@ -44,7 +46,8 @@ void RenamePath(string path)
         try
         {
             var original = File.ReadAllText(fn);
-            var @new = original.Replace(oldName, newName);
+            var @new = original.Replace("PROJECT_NAME", newName);
+            @new = @new.Replace("PROJNAMESPACE_NAME", newNamespace);
             foreach (var (name, guid) in guids)
             {
                 @new = @new.Replace(name, guid.ToString());
@@ -61,9 +64,9 @@ void RenamePath(string path)
         {
             Warn($"Could not read/write {fn}: {e.Message}");
         }
-        if (fn.Contains(oldName))
+        if (fn.Contains(PROJECT_NAME))
         {
-            var newfn = fn.Replace(oldName, newName);
+            var newfn = fn.Replace(PROJECT_NAME, newName);
             File.Move(fn, newfn);
             Console.WriteLine($"Successfully renamed {fn} -> {newfn}");
         }
@@ -74,9 +77,9 @@ void RenamePath(string path)
         if (dir.Contains("obj")) continue;
         if (dir.Contains("/.")) continue;
         if (dir.Contains("\\.")) continue;
-        if (dir.Contains(oldName))
+        if (dir.Contains(PROJECT_NAME))
         {
-            var newdir = dir.Replace(oldName, newName);
+            var newdir = dir.Replace(PROJECT_NAME, newName);
             Directory.Move(dir, newdir);
             Console.WriteLine($"Successfully renamed {dir} -> {newdir}");
             RenamePath(newdir);
@@ -86,9 +89,9 @@ void RenamePath(string path)
     }
 }
 
-Debug.Assert(!oldName.Contains(newName));
-Debug.Assert(!newName.Contains(oldName));
-Debug.Assert(!dest[..1].Contains(oldName));
+Debug.Assert(!PROJECT_NAME.Contains(newName));
+Debug.Assert(!newName.Contains(PROJECT_NAME));
+Debug.Assert(!dest[..1].Contains(PROJECT_NAME));
 var newdir = Path.Combine(dest, newName);
 CopyFilesRecursively(templatePath, newdir);
 RenamePath(newdir);
