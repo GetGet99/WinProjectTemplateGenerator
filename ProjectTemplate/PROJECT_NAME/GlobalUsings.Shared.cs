@@ -7,6 +7,7 @@ global using System.Numerics;
 global using System.Collections;
 global using System.Collections.Specialized;
 global using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace PROJECT_NAME;
 internal static class SelfNote
@@ -22,7 +23,9 @@ internal static class SelfNote
     public static void DebugBreakOnShift()
     {
 #if DEBUG
-        if (WinWrapper.Input.Keyboard.IsShiftDown)
+        [DllImport("user32.dll")]
+        static extern short GetAsyncKeyState(int vKey);
+        if (GetAsyncKeyState(16) != 0)
             Debugger.Break();
 #endif
     }
